@@ -17,6 +17,7 @@ export default function Navbar() {
     { label: t.nav.research, href: '/penelitian' },
     { label: t.nav.team, href: '/tim' },
     { label: t.nav.news, href: '/berita' },
+    { label: 'Data GNSS', href: '/data' },
     { label: t.nav.contact, href: '/kontak' },
   ];
 

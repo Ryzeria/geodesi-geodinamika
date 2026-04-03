@@ -1,6 +1,7 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AppProvider } from './context/AppContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import SearchModal from './components/SearchModal';
@@ -10,6 +11,9 @@ import Research from './pages/Research';
 import Team from './pages/Team';
 import News from './pages/News';
 import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import DataDashboard from './pages/DataDashboard';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -19,13 +23,23 @@ function ScrollToTop() {
   return null;
 }
 
+function ProtectedRoute({ children }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
+
 function AppInner() {
+  const location = useLocation();
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+  const isDataPage = location.pathname === '/data';
+
   return (
     <>
       <ScrollToTop />
-      <SearchModal />
-      <Navbar />
-      <main className="min-h-screen">
+      {!isAuthPage && !isDataPage && <SearchModal />}
+      {!isAuthPage && !isDataPage && <Navbar />}
+      <main className={!isAuthPage && !isDataPage ? 'min-h-screen' : ''}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tentang" element={<About />} />
@@ -33,11 +47,17 @@ function AppInner() {
           <Route path="/tim" element={<Team />} />
           <Route path="/berita" element={<News />} />
           <Route path="/kontak" element={<Contact />} />
-          {/* 404 */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/data" element={
+            <ProtectedRoute>
+              <DataDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
+      {!isAuthPage && !isDataPage && <Footer />}
     </>
   );
 }
@@ -45,7 +65,9 @@ function AppInner() {
 export default function App() {
   return (
     <AppProvider>
-      <AppInner />
+      <AuthProvider>
+        <AppInner />
+      </AuthProvider>
     </AppProvider>
   );
 }

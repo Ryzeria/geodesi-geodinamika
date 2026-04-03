@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Globe, Satellite, Waves, Zap, Mountain,
-  ChevronDown, BookOpen, Users, FlaskConical, Award, Mail
+  ChevronDown, BookOpen, Users, FlaskConical, Award, Mail, Database
 } from 'lucide-react';
 import ParticleCanvas from '../components/ParticleCanvas';
 import ScrollReveal from '../components/ScrollReveal';
@@ -48,10 +48,10 @@ function StatCard({ value, suffix, label, icon, delay = 0, isDark }) {
       <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 mb-4 text-2xl group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
-      <div className={`font-heading text-4xl lg:text-5xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+      <div className="font-heading text-4xl lg:text-5xl font-black mb-1 text-white">
         {count}{suffix}
       </div>
-      <div className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{label}</div>
+      <div className="text-sm font-medium text-blue-200">{label}</div>
     </div>
   );
 }
@@ -150,116 +150,145 @@ export default function Home() {
     <div>
       {/* ──────────── HERO ──────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Layered background */}
-        <div className="absolute inset-0 bg-[#0b1829]" />
-        <div className="absolute inset-0 bg-grid opacity-40" />
-
-        {/* Hero image overlay */}
-        <div className="absolute inset-0">
-          <img
-            src="/images/hero-bg.jpg"
-            alt="Hero background"
-            className="w-full h-full object-cover opacity-10"
-            style={{ filter: 'blur(2px)' }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0b1829]/60 via-[#0b1829]/30 to-[#0b1829]" />
-        </div>
-
-        {/* Radial glow center */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
-        </div>
-
-        {/* Particle canvas */}
-        <ParticleCanvas />
-
-        {/* Orbital decorations */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="relative w-[600px] h-[600px] opacity-15">
-            <div className="absolute inset-0 border border-blue-400/30 rounded-full orbit-1" />
-            <div className="absolute inset-8 border border-blue-400/20 rounded-full orbit-2" />
-            <div className="absolute inset-20 border border-amber-400/15 rounded-full orbit-3" />
-          </div>
-        </div>
+        {/* Background — light or dark */}
+        {isDark ? (
+          <>
+            <div className="absolute inset-0 bg-[#0b1829]" />
+            <div className="absolute inset-0 bg-grid opacity-30" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-blue-600/8 rounded-full blur-3xl pointer-events-none" />
+            <ParticleCanvas />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/60 to-white" />
+            <div className="absolute inset-0 bg-grid opacity-[0.07]" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-100/70 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-100/80 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4" />
+            <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-green-100/60 rounded-full blur-3xl pointer-events-none" />
+          </>
+        )}
 
         {/* Content */}
-        <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto pt-28">
-          {/* Badge */}
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-sm font-medium mb-8 transition-all duration-700 ${
-              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+        <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 max-w-5xl mx-auto pt-24 pb-10">
+
+          {/* Large logo */}
+          <div className={`transition-all duration-700 ${heroVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+            <div className={`w-28 h-28 sm:w-36 sm:h-36 rounded-3xl flex items-center justify-center shadow-2xl mb-8 mx-auto ${
+              isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 shadow-blue-500/30' : 'bg-gradient-to-br from-blue-600 to-blue-800 shadow-blue-500/25'
+            }`}>
+              <img
+                src="/images/its-logo.png"
+                alt="ITS Logo"
+                className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-lg"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = '<span class="text-white font-black text-4xl font-heading">GG</span>';
+                }}
+              />
+            </div>
+          </div>
+
+          {/* University badge */}
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 transition-all duration-700 delay-100 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          } ${isDark
+            ? 'bg-blue-500/10 border border-blue-500/25 text-blue-300'
+            : 'bg-blue-100 border border-blue-200 text-blue-700'
+          }`}>
+            <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-blue-400' : 'bg-blue-500'}`} />
             Institut Teknologi Sepuluh Nopember — Surabaya
           </div>
 
           {/* Main title */}
-          <h1
-            className={`font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-none mb-6 transition-all duration-700 delay-150 ${
-              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
-            <span className="text-white">Lab. </span>
+          <h1 className={`font-heading font-black leading-none mb-5 transition-all duration-700 delay-150 text-5xl sm:text-6xl md:text-7xl lg:text-8xl ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}>
+            <span className={isDark ? 'text-white' : 'text-slate-900'}>Lab. </span>
             <span className="gradient-text">Geodesi</span>
             <br />
-            <span className="text-white">&amp; </span>
+            <span className={isDark ? 'text-white' : 'text-slate-900'}>&amp; </span>
             <span className="gradient-text-gold">Geodinamika</span>
           </h1>
 
           {/* Subtitle */}
-          <p
-            className={`text-slate-300 text-lg sm:text-xl md:text-2xl font-light mb-4 transition-all duration-700 delay-300 ${
-              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
+          <p className={`text-lg sm:text-xl font-light mb-3 transition-all duration-700 delay-200 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          } ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             Departemen Teknik Geomatika
           </p>
 
-          <p
-            className={`text-slate-400 text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed transition-all duration-700 delay-500 ${
-              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
+          <p className={`text-base max-w-2xl mx-auto mb-8 leading-relaxed transition-all duration-700 delay-300 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          } ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
             Mengembangkan ilmu dan teknologi geodesi serta geodinamika bertaraf nasional dan
             internasional melalui penelitian inovatif dan kolaborasi strategis.
           </p>
 
+          {/* Tag pills */}
+          <div className={`flex flex-wrap justify-center gap-2 mb-10 transition-all duration-700 delay-400 ${
+            heroVisible ? 'opacity-100' : 'opacity-0'
+          }`}>
+            {['🌍 Geodesi', '📡 GNSS', '🌊 Altimetri', '⚡ Deformasi', '🌋 Geodinamika'].map((tag) => (
+              <span key={tag} className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                isDark
+                  ? 'bg-white/5 border-white/15 text-slate-300'
+                  : 'bg-white border-blue-200 text-blue-700 shadow-sm'
+              }`}>
+                {tag}
+              </span>
+            ))}
+          </div>
+
           {/* CTAs */}
-          <div
-            className={`flex flex-wrap items-center justify-center gap-4 mb-16 transition-all duration-700 delay-700 ${
-              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
+          <div className={`flex flex-wrap items-center justify-center gap-3 mb-14 transition-all duration-700 delay-500 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}>
             <Link to="/penelitian" className="btn-primary">
-              Eksplorasi Penelitian
-              <ArrowRight size={18} />
+              Eksplorasi Penelitian <ArrowRight size={18} />
+            </Link>
+            <Link to="/data" className="btn-gold">
+              <Database size={16} />
+              Akses Data GNSS
             </Link>
             <Link to="/tim" className="btn-secondary">
               Tim Dosen
             </Link>
           </div>
 
-          {/* Scroll indicator */}
-          <button
-            onClick={scrollToContent}
-            className={`flex flex-col items-center gap-2 text-slate-500 hover:text-blue-400 transition-all duration-500 mx-auto delay-1000 ${
-              heroVisible ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <span className="text-xs font-mono tracking-widest uppercase">Scroll</span>
-            <ChevronDown size={18} className="animate-bounce" />
-          </button>
+          {/* Stats bar */}
+          <div className={`w-full max-w-3xl transition-all duration-700 delay-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className={`rounded-2xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6 border ${
+              isDark
+                ? 'bg-white/5 border-white/10 backdrop-blur-sm'
+                : 'bg-white/80 border-blue-100 shadow-xl shadow-blue-500/8 backdrop-blur-sm'
+            }`}>
+              {stats.map((s) => (
+                <div key={s.label} className="text-center">
+                  <div className={`font-heading text-3xl font-black ${isDark ? 'text-white' : 'text-blue-700'}`}>
+                    {s.value}{s.suffix}
+                  </div>
+                  <div className={`text-xs font-medium mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
+        {/* Scroll indicator */}
+        <button onClick={scrollToContent}
+          className={`relative z-10 flex flex-col items-center gap-2 transition-all duration-500 pb-6 ${
+            heroVisible ? 'opacity-100' : 'opacity-0'
+          } ${isDark ? 'text-slate-500 hover:text-blue-400' : 'text-slate-400 hover:text-blue-600'}`}
+        >
+          <span className="text-xs font-mono tracking-widest uppercase">Scroll</span>
+          <ChevronDown size={18} className="animate-bounce" />
+        </button>
       </section>
 
-      {/* ──────────── STATS ──────────── */}
-      <section id="content-start" className="py-20 relative overflow-hidden">
-        {isDark && <div className="absolute inset-0 bg-gradient-to-b from-navy-900/50 to-transparent" />}
-        <div className="absolute inset-0 bg-dot-pattern opacity-10" />
+      {/* ──────────── STATS (animated counters) ──────────── */}
+      <section id="content-start" className={`py-16 relative overflow-hidden ${isDark ? '' : 'bg-white'}`}>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`rounded-3xl p-10 md:p-14 border border-blue-500/10 shadow-2xl shadow-blue-500/5 ${isDark ? 'card-glass' : 'bg-white'}`}>
+          <div className={`rounded-3xl p-10 md:p-12 border shadow-2xl ${isDark ? 'card-glass border-blue-500/10 shadow-blue-500/5' : 'bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500'}`}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 md:gap-14">
               {stats.map((s, i) => (
                 <StatCard key={s.label} {...s} delay={i * 200} isDark={isDark} />

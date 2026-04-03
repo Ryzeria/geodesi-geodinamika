@@ -8,7 +8,7 @@ const AppContext = createContext({
 
 export function AppProvider({ children }) {
   const [isDark, setIsDark] = useState(() => {
-    try { return localStorage.getItem('gg-theme') !== 'light'; } catch { return true; }
+    try { return localStorage.getItem('gg-theme') === 'dark'; } catch { return false; }
   });
   const [lang, setLang] = useState(() => {
     try { return localStorage.getItem('gg-lang') || 'id'; } catch { return 'id'; }
