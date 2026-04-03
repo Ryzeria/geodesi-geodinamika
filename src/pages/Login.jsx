@@ -40,19 +40,19 @@ export default function Login() {
       <div className="relative w-full max-w-md">
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
-          {/* Logo */}
+          {/* Logo — no box, just the image */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-4">
-              <img
-                src="/images/its-logo.png"
-                alt="ITS"
-                className="w-11 h-11 object-contain"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.parentElement.innerHTML = '<span class="text-white font-bold text-xl font-heading">GG</span>';
-                }}
-              />
-            </div>
+            <img
+              src="/images/its-logo.png"
+              alt="ITS"
+              className="w-20 h-20 object-contain mb-4 drop-shadow-sm"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.insertAdjacentHTML('afterend',
+                  '<div class="w-20 h-20 flex items-center justify-center text-blue-700 font-black font-heading text-3xl mb-4">GG</div>'
+                );
+              }}
+            />
             <h1 className="font-heading font-bold text-2xl text-slate-900">Masuk ke Portal Data</h1>
             <p className="text-slate-500 text-sm mt-1">Lab. Geodesi &amp; Geodinamika — ITS</p>
           </div>

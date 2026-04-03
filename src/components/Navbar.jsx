@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon, Search, Globe } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Globe, LogIn } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useT } from '../translations';
 
@@ -17,7 +17,6 @@ export default function Navbar() {
     { label: t.nav.research, href: '/penelitian' },
     { label: t.nav.team, href: '/tim' },
     { label: t.nav.news, href: '/berita' },
-    { label: 'Data GNSS', href: '/data' },
     { label: t.nav.contact, href: '/kontak' },
   ];
 
@@ -59,22 +58,19 @@ export default function Navbar() {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${navBg}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
+            {/* Logo — no box, just the image */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative w-11 h-11 flex-shrink-0">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-400 to-blue-700 flex items-center justify-center shadow-md shadow-black/30 ring-1 ring-white/20 group-hover:shadow-lg group-hover:shadow-blue-500/40 transition-all duration-300">
-                  <img
-                    src="/images/its-logo.png"
-                    alt="ITS"
-                    className="w-8 h-8 object-contain"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.parentElement.innerHTML = '<span class="text-white font-bold text-sm font-heading">GG</span>';
-                    }}
-                  />
-                </div>
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-[#0b1829]" />
-              </div>
+              <img
+                src="/images/its-logo.png"
+                alt="ITS"
+                className="w-10 h-10 object-contain flex-shrink-0 group-hover:opacity-80 transition-opacity"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.insertAdjacentHTML('afterend',
+                    '<span class="w-10 h-10 flex items-center justify-center text-blue-600 font-black font-heading text-lg">GG</span>'
+                  );
+                }}
+              />
               <div className="hidden sm:block">
                 <p className={`font-heading font-bold text-sm leading-none tracking-wide ${logoText}`}>
                   Lab. Geodesi &amp; Geodinamika
@@ -136,10 +132,11 @@ export default function Navbar() {
                 {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
 
-              {/* CTA */}
-              <a href="mailto:ekoyh@its.ac.id" className="btn-primary text-sm py-2 px-4 ml-1">
-                {t.nav.cta}
-              </a>
+              {/* Login CTA */}
+              <Link to="/login" className="btn-primary text-sm py-2 px-4 ml-1 inline-flex items-center gap-2">
+                <LogIn size={15} />
+                Masuk
+              </Link>
             </div>
 
             {/* Mobile controls */}
@@ -188,9 +185,14 @@ export default function Navbar() {
           <div className="p-6 pt-20 flex flex-col gap-2">
             {/* Logo in mobile */}
             <div className={`flex items-center gap-3 mb-6 pb-6 border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                <span className="text-white font-bold text-sm font-heading">GG</span>
-              </div>
+              <img
+                src="/images/its-logo.png"
+                alt="ITS"
+                className="w-10 h-10 object-contain flex-shrink-0"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
               <div>
                 <p className={`font-heading font-bold text-sm ${logoText}`}>Lab Geodesi &amp; Geodinamika</p>
                 <p className={`text-xs ${logoSub}`}>ITS Surabaya</p>
@@ -216,7 +218,6 @@ export default function Navbar() {
             ))}
 
             <div className={`mt-2 pt-4 border-t ${isDark ? 'border-white/10' : 'border-slate-200'} flex flex-col gap-2`}>
-              {/* Language toggle */}
               <button
                 onClick={toggleLang}
                 className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
@@ -226,12 +227,10 @@ export default function Navbar() {
                 <Globe size={15} />
                 {lang === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}
               </button>
-              <a
-                href="mailto:ekoyh@its.ac.id"
-                className="btn-primary w-full justify-center"
-              >
-                {t.nav.cta}
-              </a>
+              <Link to="/login" className="btn-primary w-full justify-center inline-flex gap-2">
+                <LogIn size={15} />
+                Masuk
+              </Link>
             </div>
           </div>
         </div>

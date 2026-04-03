@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Globe, Satellite, Waves, Mountain, Zap, ChevronRight, MapPin } from 'lucide-react';
 import PageHero from '../components/PageHero';
 import ScrollReveal from '../components/ScrollReveal';
@@ -352,13 +353,13 @@ export default function Research() {
                     </div>
                   ))}
                 </div>
-                <button className={`w-full text-center text-sm font-medium py-2 rounded-lg border transition-colors ${
+                <Link to="/login" className={`w-full block text-center text-sm font-medium py-2 rounded-lg border transition-colors ${
                   isDark
                     ? 'border-blue-500/30 text-blue-400 hover:bg-blue-500/10'
                     : 'border-blue-300 text-blue-600 hover:bg-blue-50'
                 }`}>
                   Akses Data →
-                </button>
+                </Link>
               </div>
             </ScrollReveal>
 

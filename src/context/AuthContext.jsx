@@ -19,14 +19,14 @@ export function AuthProvider({ children }) {
 
   function login(email, password) {
     if (!email || !password) throw new Error('Email dan password wajib diisi');
-    const session = { email, name: email.split('@')[0], loginAt: Date.now() };
+    const session = { email, name: email.split('@')[0], institution: '', loginAt: Date.now() };
     localStorage.setItem('gg-user', JSON.stringify(session));
     setUser(session);
   }
 
-  function register(name, email, password) {
+  function register(name, email, password, institution) {
     if (!name || !email || !password) throw new Error('Semua field wajib diisi');
-    const session = { email, name, loginAt: Date.now() };
+    const session = { email, name, institution: institution || '', loginAt: Date.now() };
     localStorage.setItem('gg-user', JSON.stringify(session));
     setUser(session);
   }

@@ -13,14 +13,14 @@ const socialLinks = [
 
 /* Mock visitor data */
 const visitorStats = {
-  total: 12847,
-  today: 34,
+  total: 1247,
+  today: 8,
   countries: [
-    { flag: '🇮🇩', name: 'Indonesia', count: '8.2k', pct: 64 },
-    { flag: '🇺🇸', name: 'USA', count: '1.2k', pct: 9 },
-    { flag: '🇦🇺', name: 'Australia', count: '648', pct: 5 },
-    { flag: '🇯🇵', name: 'Japan', count: '445', pct: 3 },
-    { flag: '🌐', name: 'Lainnya', count: '2.4k', pct: 19 },
+    { flag: '🇮🇩', name: 'Indonesia', count: '812', pct: 65 },
+    { flag: '🇺🇸', name: 'USA', count: '112', pct: 9 },
+    { flag: '🇦🇺', name: 'Australia', count: '62', pct: 5 },
+    { flag: '🇯🇵', name: 'Japan', count: '37', pct: 3 },
+    { flag: '🌐', name: 'Lainnya', count: '224', pct: 18 },
   ],
 };
 
@@ -48,17 +48,17 @@ export default function Footer() {
           {/* ── Left: Brand + contact + social + visitor counter ── */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <img
-                  src="/images/its-logo.png"
-                  alt="ITS"
-                  className="w-8 h-8 object-contain"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.parentElement.innerHTML = '<span class="text-white font-bold font-heading text-sm">GG</span>';
-                  }}
-                />
-              </div>
+              <img
+                src="/images/its-logo.png"
+                alt="ITS"
+                className="w-12 h-12 object-contain flex-shrink-0"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.insertAdjacentHTML('afterend',
+                    '<span class="text-white font-bold font-heading text-xl w-12 h-12 flex items-center justify-center">GG</span>'
+                  );
+                }}
+              />
               <div>
                 <p className={`font-heading font-bold text-lg leading-none ${textPrimary}`}>
                   Lab. Geodesi &amp; Geodinamika

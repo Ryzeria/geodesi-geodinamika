@@ -149,7 +149,7 @@ export default function Home() {
   return (
     <div>
       {/* ──────────── HERO ──────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
         {/* Background — light or dark */}
         {isDark ? (
           <>
@@ -160,123 +160,131 @@ export default function Home() {
           </>
         ) : (
           <>
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/60 to-white" />
-            <div className="absolute inset-0 bg-grid opacity-[0.07]" />
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-100/70 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-100/80 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4" />
-            <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-green-100/60 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/50 to-white" />
+            <div className="absolute inset-0 bg-grid opacity-[0.06]" />
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-100/60 rounded-full blur-3xl pointer-events-none -translate-y-1/3 translate-x-1/4" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100/70 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4" />
+            <div className="absolute top-1/2 right-1/3 w-80 h-80 bg-green-100/50 rounded-full blur-3xl pointer-events-none" />
           </>
         )}
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 max-w-5xl mx-auto pt-24 pb-10">
+        {/* Two-column content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24 pb-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
-          {/* Large logo */}
-          <div className={`transition-all duration-700 ${heroVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-            <div className={`w-28 h-28 sm:w-36 sm:h-36 rounded-3xl flex items-center justify-center shadow-2xl mb-8 mx-auto ${
-              isDark ? 'bg-gradient-to-br from-blue-500 to-blue-700 shadow-blue-500/30' : 'bg-gradient-to-br from-blue-600 to-blue-800 shadow-blue-500/25'
-            }`}>
-              <img
-                src="/images/its-logo.png"
-                alt="ITS Logo"
-                className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-lg"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.parentElement.innerHTML = '<span class="text-white font-black text-4xl font-heading">GG</span>';
-                }}
-              />
+            {/* ── Left: Large Logo ── */}
+            <div className={`flex justify-center lg:justify-end transition-all duration-700 ${heroVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+              <div className="relative">
+                {/* Decorative glow ring */}
+                <div className={`absolute inset-0 rounded-full blur-2xl scale-110 pointer-events-none ${
+                  isDark ? 'bg-blue-500/20' : 'bg-blue-200/50'
+                }`} />
+                <img
+                  src="/images/its-logo.png"
+                  alt="ITS Logo"
+                  className="relative w-56 h-56 sm:w-72 sm:h-72 lg:w-80 lg:h-80 object-contain drop-shadow-2xl"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML += `<span class="relative font-black text-8xl font-heading ${isDark ? 'text-blue-400' : 'text-blue-700'}">GG</span>`;
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* University badge */}
-          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 transition-all duration-700 delay-100 ${
-            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          } ${isDark
-            ? 'bg-blue-500/10 border border-blue-500/25 text-blue-300'
-            : 'bg-blue-100 border border-blue-200 text-blue-700'
-          }`}>
-            <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-blue-400' : 'bg-blue-500'}`} />
-            Institut Teknologi Sepuluh Nopember — Surabaya
-          </div>
+            {/* ── Right: Text Content ── */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
 
-          {/* Main title */}
-          <h1 className={`font-heading font-black leading-none mb-5 transition-all duration-700 delay-150 text-5xl sm:text-6xl md:text-7xl lg:text-8xl ${
-            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          }`}>
-            <span className={isDark ? 'text-white' : 'text-slate-900'}>Lab. </span>
-            <span className="gradient-text">Geodesi</span>
-            <br />
-            <span className={isDark ? 'text-white' : 'text-slate-900'}>&amp; </span>
-            <span className="gradient-text-gold">Geodinamika</span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className={`text-lg sm:text-xl font-light mb-3 transition-all duration-700 delay-200 ${
-            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          } ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-            Departemen Teknik Geomatika
-          </p>
-
-          <p className={`text-base max-w-2xl mx-auto mb-8 leading-relaxed transition-all duration-700 delay-300 ${
-            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          } ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            Mengembangkan ilmu dan teknologi geodesi serta geodinamika bertaraf nasional dan
-            internasional melalui penelitian inovatif dan kolaborasi strategis.
-          </p>
-
-          {/* Tag pills */}
-          <div className={`flex flex-wrap justify-center gap-2 mb-10 transition-all duration-700 delay-400 ${
-            heroVisible ? 'opacity-100' : 'opacity-0'
-          }`}>
-            {['🌍 Geodesi', '📡 GNSS', '🌊 Altimetri', '⚡ Deformasi', '🌋 Geodinamika'].map((tag) => (
-              <span key={tag} className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                isDark
-                  ? 'bg-white/5 border-white/15 text-slate-300'
-                  : 'bg-white border-blue-200 text-blue-700 shadow-sm'
+              {/* University badge */}
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 transition-all duration-700 delay-100 ${
+                heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              } ${isDark
+                ? 'bg-blue-500/10 border border-blue-500/25 text-blue-300'
+                : 'bg-blue-100 border border-blue-200 text-blue-700'
               }`}>
-                {tag}
-              </span>
-            ))}
-          </div>
+                <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-blue-400' : 'bg-blue-500'}`} />
+                Institut Teknologi Sepuluh Nopember — Surabaya
+              </div>
 
-          {/* CTAs */}
-          <div className={`flex flex-wrap items-center justify-center gap-3 mb-14 transition-all duration-700 delay-500 ${
-            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          }`}>
-            <Link to="/penelitian" className="btn-primary">
-              Eksplorasi Penelitian <ArrowRight size={18} />
-            </Link>
-            <Link to="/data" className="btn-gold">
-              <Database size={16} />
-              Akses Data GNSS
-            </Link>
-            <Link to="/tim" className="btn-secondary">
-              Tim Dosen
-            </Link>
-          </div>
+              {/* Main title */}
+              <h1 className={`font-heading font-black leading-none mb-5 transition-all duration-700 delay-150 text-5xl sm:text-6xl lg:text-7xl ${
+                heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}>
+                <span className={isDark ? 'text-white' : 'text-slate-900'}>Lab. </span>
+                <span className="gradient-text">Geodesi</span>
+                <br />
+                <span className={isDark ? 'text-white' : 'text-slate-900'}>&amp; </span>
+                <span className="gradient-text-gold">Geodinamika</span>
+              </h1>
 
-          {/* Stats bar */}
-          <div className={`w-full max-w-3xl transition-all duration-700 delay-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className={`rounded-2xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6 border ${
-              isDark
-                ? 'bg-white/5 border-white/10 backdrop-blur-sm'
-                : 'bg-white/80 border-blue-100 shadow-xl shadow-blue-500/8 backdrop-blur-sm'
-            }`}>
-              {stats.map((s) => (
-                <div key={s.label} className="text-center">
-                  <div className={`font-heading text-3xl font-black ${isDark ? 'text-white' : 'text-blue-700'}`}>
-                    {s.value}{s.suffix}
-                  </div>
-                  <div className={`text-xs font-medium mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{s.label}</div>
+              {/* Subtitle */}
+              <p className={`text-lg font-light mb-3 transition-all duration-700 delay-200 ${
+                heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              } ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                Departemen Teknik Geomatika
+              </p>
+
+              <p className={`text-base max-w-xl mb-8 leading-relaxed transition-all duration-700 delay-300 ${
+                heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              } ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                Mengembangkan ilmu dan teknologi geodesi serta geodinamika bertaraf nasional dan
+                internasional melalui penelitian inovatif dan kolaborasi strategis.
+              </p>
+
+              {/* Tag pills */}
+              <div className={`flex flex-wrap justify-center lg:justify-start gap-2 mb-8 transition-all duration-700 delay-400 ${
+                heroVisible ? 'opacity-100' : 'opacity-0'
+              }`}>
+                {['🌍 Geodesi', '📡 GNSS', '🌊 Altimetri', '⚡ Deformasi', '🌋 Geodinamika'].map((tag) => (
+                  <span key={tag} className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                    isDark
+                      ? 'bg-white/5 border-white/15 text-slate-300'
+                      : 'bg-white border-blue-200 text-blue-700 shadow-sm'
+                  }`}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div className={`flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-10 transition-all duration-700 delay-500 ${
+                heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}>
+                <Link to="/penelitian" className="btn-primary">
+                  Eksplorasi Penelitian <ArrowRight size={18} />
+                </Link>
+                <Link to="/login" className="btn-gold">
+                  <Database size={16} />
+                  Akses Data GNSS
+                </Link>
+                <Link to="/tim" className="btn-secondary">
+                  Tim Dosen
+                </Link>
+              </div>
+
+              {/* Stats bar */}
+              <div className={`w-full transition-all duration-700 delay-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                <div className={`rounded-2xl px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-4 border ${
+                  isDark
+                    ? 'bg-white/5 border-white/10 backdrop-blur-sm'
+                    : 'bg-white/80 border-blue-100 shadow-xl shadow-blue-500/8 backdrop-blur-sm'
+                }`}>
+                  {stats.map((s) => (
+                    <div key={s.label} className="text-center">
+                      <div className={`font-heading text-2xl font-black ${isDark ? 'text-white' : 'text-blue-700'}`}>
+                        {s.value}{s.suffix}
+                      </div>
+                      <div className={`text-xs font-medium mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{s.label}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Scroll indicator */}
         <button onClick={scrollToContent}
-          className={`relative z-10 flex flex-col items-center gap-2 transition-all duration-500 pb-6 ${
+          className={`relative z-10 flex flex-col items-center gap-2 transition-all duration-500 pb-6 mx-auto ${
             heroVisible ? 'opacity-100' : 'opacity-0'
           } ${isDark ? 'text-slate-500 hover:text-blue-400' : 'text-slate-400 hover:text-blue-600'}`}
         >
@@ -468,14 +476,14 @@ export default function Home() {
               <div className="relative">
                 <div className="flex justify-center mb-6">
                   <div className="flex -space-x-3">
-                    {['MT', 'IA', 'EH', 'AK', 'PM'].map((init, i) => (
+                    {['EH', 'IA', 'AK', 'PM'].map((init, i) => (
                       <div
                         key={init}
                         className={`w-12 h-12 rounded-full border-2 flex items-center justify-center text-sm font-bold font-heading overflow-hidden ${isDark ? 'border-[#0f2040]' : 'border-white'}`}
-                        style={{ background: ['#1d4ed8', '#7c3aed', '#d97706', '#0d9488', '#0891b2'][i] }}
+                        style={{ background: ['#d97706', '#7c3aed', '#0d9488', '#0891b2'][i] }}
                       >
                         <img
-                          src={`/images/team/${['taufik', 'ira', 'eko', 'akbar', 'putra'][i]}.jpg`}
+                          src={`/images/team/${['eko', 'ira', 'akbar', 'putra'][i]}.jpg`}
                           alt={init}
                           className="w-full h-full object-cover"
                           onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.textContent = init; }}
@@ -489,7 +497,7 @@ export default function Home() {
                   Peneliti &amp; <span className="gradient-text">Dosen</span> Berpengalaman
                 </h2>
                 <p className={`max-w-lg mx-auto mb-8 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Lima dosen peneliti dengan keahlian khusus di bidang Geodesi dan Geodinamika,
+                  Empat dosen peneliti dengan keahlian khusus di bidang Geodesi dan Geodinamika,
                   berpengalaman dari universitas nasional dan internasional terkemuka.
                 </p>
                 <Link to="/tim" className="btn-primary">
