@@ -2,10 +2,9 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Download, ShoppingCart, X, CheckCircle, Satellite,
-  Calendar, LogOut, ChevronDown, Info, FileText, Database
+  LogOut, Info, FileText, Database, CloudRain
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useApp } from '../context/AppContext';
 
 /* ── helpers ── */
 function getDOY(date) {
@@ -17,7 +16,6 @@ function formatDOY(n) {
   return String(n).padStart(3, '0');
 }
 
-/** Generate all dates in [startDate, endDate] inclusive */
 function dateRange(start, end) {
   const dates = [];
   const cur = new Date(start);
@@ -37,22 +35,30 @@ function seedRand(seed) {
   };
 }
 
-const STATIONS = [
+/* ── data config ── */
+const DATA_CATEGORIES = [
   {
-    id: 'CMJT', name: 'CMJT', fullName: 'Stasiun GNSS Cemara Jaya',
-    location: 'Surabaya, Jawa Timur', available: true,
-    color: 'blue', dot: 'bg-green-400',
+    id: 'cors',
+    label: 'Data CORS ITSN',
+    icon: Satellite,
+    color: 'blue',
+    description: 'Continuously Operating Reference Station ITS Nopember — data pengamatan GNSS RINEX',
+    types: [
+      { id: 'obs', label: 'Observation (.xxO)', ext: 'O', desc: 'RINEX observation file' },
+      { id: 'nav', label: 'Navigation (.xxN)', ext: 'N', desc: 'GNSS navigation message' },
+    ],
   },
   {
-    id: 'ITSN', name: 'ITSN', fullName: 'Stasiun GNSS ITS North',
-    location: 'Kampus ITS, Surabaya', available: false,
-    color: 'slate', dot: 'bg-amber-400',
+    id: 'met',
+    label: 'GNSS Meteorologi',
+    icon: CloudRain,
+    color: 'teal',
+    description: 'Data Precipitable Water Vapor (PWV) dan Zenith Total Delay (ZTD) dari pengamatan GNSS kampus ITS',
+    types: [
+      { id: 'pwv', label: 'Precipitable Water Vapor (PWV)', ext: 'csv', desc: 'PWV harian dalam milimeter (mm)' },
+      { id: 'ztd', label: 'Zenith Total Delay (ZTD)', ext: 'csv', desc: 'ZTD time series per 30 menit' },
+    ],
   },
-];
-
-const FILE_TYPES = [
-  { id: 'obs', label: 'Observation (.xxO)', ext: 'O', desc: 'RINEX observation data' },
-  { id: 'nav', label: 'Navigation (.xxN)', ext: 'N', desc: 'GNSS navigation message' },
 ];
 
 const MONTH_NAMES = [
@@ -61,12 +67,9 @@ const MONTH_NAMES = [
 ];
 
 /* ── month calendar block ── */
-function MonthCalendar({ year, month, allDates, windowStart, windowEnd, today, availSet, selectedSet, onToggle }) {
-  // first day of this month, last day
+function MonthCalendar({ year, month, windowStart, windowEnd, today, availSet, selectedSet, onToggle }) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-
-  // days in the calendar grid (pad start)
   const startPad = (firstDay.getDay() + 6) % 7; // Monday=0
   const cells = [];
   for (let i = 0; i < startPad; i++) cells.push(null);
@@ -77,7 +80,6 @@ function MonthCalendar({ year, month, allDates, windowStart, windowEnd, today, a
       <h3 className="font-heading font-bold text-slate-800 text-sm mb-3">
         {MONTH_NAMES[month]} {year}
       </h3>
-      {/* Day headers */}
       <div className="grid grid-cols-7 mb-1">
         {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d) => (
           <div key={d} className="text-center text-[10px] font-medium text-slate-400 py-1">{d}</div>
@@ -93,7 +95,6 @@ function MonthCalendar({ year, month, allDates, windowStart, windowEnd, today, a
           const isSel = selectedSet.has(key);
 
           let cls = 'relative flex flex-col items-center justify-center rounded-lg h-9 text-[11px] font-medium transition-all cursor-default select-none';
-          let doyEl = null;
 
           if (!inWindow) {
             cls += ' text-slate-200';
@@ -105,12 +106,10 @@ function MonthCalendar({ year, month, allDates, windowStart, windowEnd, today, a
             cls += ' bg-green-50 text-green-700 border border-green-200 cursor-pointer hover:bg-green-100';
           }
 
-          if (isToday && inWindow) {
-            cls += ' ring-2 ring-orange-400 ring-offset-1';
-          }
+          if (isToday && inWindow) cls += ' ring-2 ring-orange-400 ring-offset-1';
 
           const doy = getDOY(date);
-          doyEl = isAvail ? (
+          const doyEl = isAvail ? (
             <span className={`text-[8px] leading-none mt-0.5 ${isSel ? 'text-blue-200' : 'text-green-500'}`}>
               {formatDOY(doy)}
             </span>
@@ -136,14 +135,15 @@ function MonthCalendar({ year, month, allDates, windowStart, windowEnd, today, a
 /* ── main component ── */
 export default function DataDashboard() {
   const { user, logout } = useAuth();
-  const { isDark } = useApp();
   const navigate = useNavigate();
 
-  const [station, setStation] = useState('CMJT');
-  const [fileType, setFileType] = useState('obs');
-  const [cart, setCart] = useState([]); // array of date strings
-  const [stationDropOpen, setStationDropOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('cors');
+  const [fileTypeId, setFileTypeId] = useState('obs');
+  const [cart, setCart] = useState([]);
   const [downloaded, setDownloaded] = useState(false);
+
+  const category = DATA_CATEGORIES.find(c => c.id === activeCategory);
+  const fileType = category.types.find(t => t.id === fileTypeId) || category.types[0];
 
   // Rolling 1-year window
   const today = useMemo(() => {
@@ -158,23 +158,21 @@ export default function DataDashboard() {
     return d;
   }, [today]);
 
-  // Generate "available" set (exclude ~5% randomly + unavailable station)
+  // Availability: ~5% random gaps, seeded differently per data category+type
   const availSet = useMemo(() => {
-    if (station !== 'CMJT') return new Set();
-    const rand = seedRand(42);
+    const seed = activeCategory === 'cors' ? 42 : 77;
+    const rand = seedRand(seed);
     const set = new Set();
     dateRange(windowStart, today).forEach((d) => {
       if (rand() > 0.05) set.add(d.toISOString().split('T')[0]);
     });
     return set;
-  }, [station, windowStart, today]);
+  }, [activeCategory, windowStart, today]);
 
   const selectedSet = useMemo(() => new Set(cart), [cart]);
 
   function toggleDate(date, key) {
-    setCart(prev =>
-      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
-    );
+    setCart(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
     setDownloaded(false);
   }
 
@@ -182,24 +180,39 @@ export default function DataDashboard() {
     setCart(prev => prev.filter(k => k !== key));
   }
 
-  function clearCart() {
-    setCart([]);
-    setDownloaded(false);
-  }
+  function clearCart() { setCart([]); setDownloaded(false); }
 
   function buildFileName(dateKey) {
     const d = new Date(dateKey);
     const doy = getDOY(d);
     const yy = String(d.getFullYear()).slice(-2);
-    const ft = FILE_TYPES.find(f => f.id === fileType);
-    return `${station}${formatDOY(doy)}0.${yy}${ft.ext}`;
+    if (activeCategory === 'cors') {
+      return `ITSN${formatDOY(doy)}0.${yy}${fileType.ext}`;
+    }
+    // met data
+    const yyyy = d.getFullYear();
+    return `ITSN_${fileType.id.toUpperCase()}_${yyyy}${formatDOY(doy)}.${fileType.ext}`;
   }
 
   function handleDownload() {
     if (cart.length === 0) return;
     const fileList = cart.sort().map(buildFileName).join('\n');
-    alert(`📦 Simulasi Download (${cart.length} file):\n\n${fileList}\n\n✅ File siap diunduh dari server GNSS Lab.`);
+    alert(`📦 Simulasi Download (${cart.length} file)\n\n${fileList}\n\n✅ File siap diunduh dari server Lab Geodesi & Geodinamika ITS.`);
     setDownloaded(true);
+  }
+
+  function switchCategory(catId) {
+    setActiveCategory(catId);
+    const cat = DATA_CATEGORIES.find(c => c.id === catId);
+    setFileTypeId(cat.types[0].id);
+    setCart([]);
+    setDownloaded(false);
+  }
+
+  function switchFileType(typeId) {
+    setFileTypeId(typeId);
+    setCart([]);
+    setDownloaded(false);
   }
 
   function handleLogout() {
@@ -207,7 +220,6 @@ export default function DataDashboard() {
     navigate('/');
   }
 
-  // Build months to display: from windowStart month to today month
   const months = useMemo(() => {
     const result = [];
     const cur = new Date(windowStart.getFullYear(), windowStart.getMonth(), 1);
@@ -219,31 +231,39 @@ export default function DataDashboard() {
     return result;
   }, [windowStart, today]);
 
-  const stationObj = STATIONS.find(s => s.id === station);
+  const colorMap = {
+    blue: { tab: 'bg-blue-600 text-white', tabInactive: 'text-blue-600 hover:bg-blue-50', badge: 'bg-blue-50 text-blue-700 border-blue-200', icon: 'text-blue-500' },
+    teal: { tab: 'bg-teal-600 text-white', tabInactive: 'text-teal-600 hover:bg-teal-50', badge: 'bg-teal-50 text-teal-700 border-teal-200', icon: 'text-teal-500' },
+  };
+  const cc = colorMap[category.color];
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Top bar */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Logo + title */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow">
-              <Database size={16} className="text-white" />
-            </div>
+            <img
+              src="/images/its-logo.png"
+              alt="ITS"
+              className="w-9 h-9 object-contain flex-shrink-0"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
             <div>
               <p className="font-heading font-bold text-slate-900 text-sm leading-none">Portal Data GNSS</p>
               <p className="text-slate-400 text-xs mt-0.5">Lab. Geodesi &amp; Geodinamika — ITS</p>
             </div>
           </div>
 
-          {/* Right: user info + logout */}
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600">
               <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
                 {user?.name?.[0]?.toUpperCase() || 'U'}
               </div>
               <span className="font-medium">{user?.name}</span>
+              {user?.institution && (
+                <span className="text-slate-400 text-xs">· {user.institution}</span>
+              )}
             </div>
             <button
               onClick={handleLogout}
@@ -261,62 +281,64 @@ export default function DataDashboard() {
           {/* ── Sidebar ── */}
           <div className="w-72 flex-shrink-0 space-y-5">
 
-            {/* Station selector */}
+            {/* Data category tabs */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
-                <Satellite size={15} className="text-blue-500" />
-                <h2 className="font-heading font-bold text-slate-800 text-sm">Stasiun GNSS</h2>
+                <Database size={15} className="text-slate-500" />
+                <h2 className="font-heading font-bold text-slate-800 text-sm">Jenis Data</h2>
               </div>
               <div className="space-y-2">
-                {STATIONS.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => s.available && setStation(s.id)}
-                    disabled={!s.available}
-                    className={`w-full text-left flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                      station === s.id
-                        ? 'border-blue-400 bg-blue-50'
-                        : s.available
-                          ? 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
-                          : 'border-slate-100 opacity-60 cursor-not-allowed'
-                    }`}
-                  >
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${s.dot}`} />
-                    <div className="min-w-0">
-                      <p className={`font-bold text-sm ${station === s.id ? 'text-blue-700' : 'text-slate-700'}`}>{s.id}</p>
-                      <p className="text-xs text-slate-400 truncate">{s.location}</p>
-                    </div>
-                    {!s.available && (
-                      <span className="ml-auto text-[10px] font-medium text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                        Soon
-                      </span>
-                    )}
-                    {station === s.id && (
-                      <CheckCircle size={14} className="ml-auto text-blue-500 flex-shrink-0" />
-                    )}
-                  </button>
-                ))}
+                {DATA_CATEGORIES.map((cat) => {
+                  const Icon = cat.icon;
+                  const c = colorMap[cat.color];
+                  const isActive = cat.id === activeCategory;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => switchCategory(cat.id)}
+                      className={`w-full text-left flex items-start gap-3 p-3 rounded-xl border transition-all ${
+                        isActive
+                          ? `border-${cat.color}-300 bg-${cat.color}-50`
+                          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Icon size={16} className={`flex-shrink-0 mt-0.5 ${isActive ? c.icon : 'text-slate-400'}`} />
+                      <div>
+                        <p className={`font-semibold text-sm ${isActive ? (cat.color === 'blue' ? 'text-blue-700' : 'text-teal-700') : 'text-slate-700'}`}>
+                          {cat.label}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-0.5 leading-snug">{cat.description}</p>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* File type */}
+            {/* File type selector */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
-                <FileText size={15} className="text-purple-500" />
+                <FileText size={15} className="text-slate-500" />
                 <h2 className="font-heading font-bold text-slate-800 text-sm">Tipe File</h2>
               </div>
               <div className="space-y-2">
-                {FILE_TYPES.map((ft) => (
+                {category.types.map((ft) => (
                   <button
                     key={ft.id}
-                    onClick={() => { setFileType(ft.id); setCart([]); }}
+                    onClick={() => switchFileType(ft.id)}
                     className={`w-full text-left p-3 rounded-xl border transition-all ${
-                      fileType === ft.id
-                        ? 'border-purple-400 bg-purple-50'
-                        : 'border-slate-200 hover:border-purple-300 hover:bg-slate-50'
+                      fileTypeId === ft.id
+                        ? activeCategory === 'cors'
+                          ? 'border-blue-400 bg-blue-50'
+                          : 'border-teal-400 bg-teal-50'
+                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }`}
                   >
-                    <p className={`font-semibold text-sm ${fileType === ft.id ? 'text-purple-700' : 'text-slate-700'}`}>
+                    <p className={`font-semibold text-sm ${
+                      fileTypeId === ft.id
+                        ? activeCategory === 'cors' ? 'text-blue-700' : 'text-teal-700'
+                        : 'text-slate-700'
+                    }`}>
                       {ft.label}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5">{ft.desc}</p>
@@ -325,7 +347,7 @@ export default function DataDashboard() {
               </div>
             </div>
 
-            {/* Legend */}
+            {/* Info panel */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-3">
                 <Info size={15} className="text-slate-400" />
@@ -334,7 +356,7 @@ export default function DataDashboard() {
               <div className="space-y-2 text-xs text-slate-500">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded bg-green-50 border border-green-200 flex-shrink-0" />
-                  <span>Data tersedia</span>
+                  <span>Data tersedia — klik untuk pilih</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded bg-blue-600 flex-shrink-0" />
@@ -346,10 +368,10 @@ export default function DataDashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded bg-slate-100 flex-shrink-0" />
-                  <span>Tidak tersedia / di luar jangkauan</span>
+                  <span>Tidak tersedia / di luar periode</span>
                 </div>
                 <div className="mt-2 pt-2 border-t border-slate-100 text-slate-400">
-                  Angka kecil di bawah tanggal = DOY (Day of Year)
+                  Angka kecil = DOY (Day of Year)
                 </div>
               </div>
             </div>
@@ -358,23 +380,27 @@ export default function DataDashboard() {
           {/* ── Main area ── */}
           <div className="flex-1 min-w-0 space-y-5">
 
-            {/* Header row */}
+            {/* Header */}
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="font-heading font-black text-2xl text-slate-900">Data GNSS RINEX</h1>
-                <p className="text-slate-500 text-sm mt-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="font-heading font-black text-2xl text-slate-900">{category.label}</h1>
+                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cc.badge}`}>
+                    Stasiun ITSN
+                  </span>
+                </div>
+                <p className="text-slate-500 text-sm">
                   Periode:{' '}
                   <span className="font-medium text-slate-700">
-                    {windowStart.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {windowStart.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                   {' '}–{' '}
                   <span className="font-medium text-slate-700">
-                    {today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {today.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 </p>
               </div>
 
-              {/* Cart summary button */}
               <button
                 onClick={() => cart.length > 0 && handleDownload()}
                 disabled={cart.length === 0}
@@ -420,34 +446,21 @@ export default function DataDashboard() {
             )}
 
             {/* Calendar grid */}
-            {stationObj?.available ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {months.map(({ year, month }) => (
-                  <MonthCalendar
-                    key={`${year}-${month}`}
-                    year={year}
-                    month={month}
-                    allDates={dateRange(windowStart, today)}
-                    windowStart={windowStart}
-                    windowEnd={today}
-                    today={today}
-                    availSet={availSet}
-                    selectedSet={selectedSet}
-                    onToggle={toggleDate}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-24 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mb-4">
-                  <Satellite size={28} className="text-amber-500" />
-                </div>
-                <h3 className="font-heading font-bold text-slate-800 text-lg mb-2">Stasiun Segera Hadir</h3>
-                <p className="text-slate-500 text-sm max-w-sm">
-                  Data untuk stasiun <strong>{station}</strong> sedang dalam persiapan dan akan segera tersedia.
-                </p>
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {months.map(({ year, month }) => (
+                <MonthCalendar
+                  key={`${year}-${month}-${activeCategory}-${fileTypeId}`}
+                  year={year}
+                  month={month}
+                  windowStart={windowStart}
+                  windowEnd={today}
+                  today={today}
+                  availSet={availSet}
+                  selectedSet={selectedSet}
+                  onToggle={toggleDate}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

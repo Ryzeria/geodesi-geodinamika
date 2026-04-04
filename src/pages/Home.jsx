@@ -169,11 +169,11 @@ export default function Home() {
         )}
 
         {/* Two-column content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24 pb-10">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24 pb-10">
+          <div className="grid lg:grid-cols-[5fr_7fr] gap-8 lg:gap-14 items-center">
 
             {/* ── Left: Large Logo ── */}
-            <div className={`flex justify-center lg:justify-end transition-all duration-700 ${heroVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+            <div className={`flex justify-center transition-all duration-700 ${heroVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
               <div className="relative">
                 {/* Decorative glow ring */}
                 <div className={`absolute inset-0 rounded-full blur-2xl scale-110 pointer-events-none ${

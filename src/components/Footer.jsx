@@ -13,14 +13,14 @@ const socialLinks = [
 
 /* Mock visitor data */
 const visitorStats = {
-  total: 1247,
-  today: 8,
+  total: 312,
+  today: 4,
   countries: [
-    { flag: '🇮🇩', name: 'Indonesia', count: '812', pct: 65 },
-    { flag: '🇺🇸', name: 'USA', count: '112', pct: 9 },
-    { flag: '🇦🇺', name: 'Australia', count: '62', pct: 5 },
-    { flag: '🇯🇵', name: 'Japan', count: '37', pct: 3 },
-    { flag: '🌐', name: 'Lainnya', count: '224', pct: 18 },
+    { flag: '🇮🇩', name: 'Indonesia', count: '249', pct: 80 },
+    { flag: '🇲🇾', name: 'Malaysia', count: '31', pct: 10 },
+    { flag: '🇸🇬', name: 'Singapura', count: '13', pct: 4 },
+    { flag: '🇯🇵', name: 'Japan', count: '6', pct: 2 },
+    { flag: '🌐', name: 'Lainnya', count: '13', pct: 4 },
   ],
 };
 
