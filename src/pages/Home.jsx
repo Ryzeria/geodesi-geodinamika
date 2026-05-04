@@ -256,13 +256,16 @@ export default function Home() {
                   <Database size={16} />
                   Akses Data GNSS
                 </Link>
+                {/* akses ke web aws https://aws.dekatif.co.id/login.php */}
+                <Link href="https://aws.dekatif.co.id/login.php" target="_blank" rel="noopener noreferrer" className="btn-success">
+                  {/* meteorological icon */}
+                  <Globe size={16} />
+                  AWS Portal
+                </Link>
                 <Link to="/tim" className="btn-secondary">
                   Tim Dosen
                 </Link>
-                {/* akses ke web aws https://aws.dekatif.co.id/login.php */}
-                <link href="https://aws.dekatif.co.id/login.php" target="_blank" rel="noopener noreferrer" className="btn-secondary">
-                  AWS Portal
-                </link>
+                
               </div>
 
               {/* Stats bar */}
