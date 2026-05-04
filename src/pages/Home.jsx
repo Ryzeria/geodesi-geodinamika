@@ -259,6 +259,10 @@ export default function Home() {
                 <Link to="/tim" className="btn-secondary">
                   Tim Dosen
                 </Link>
+                {/* akses ke web aws https://aws.dekatif.co.id/login.php */}
+                <link href="https://aws.dekatif.co.id/login.php" target="_blank" rel="noopener noreferrer" className="btn-secondary">
+                  AWS Portal
+                </link>
               </div>
 
               {/* Stats bar */}
