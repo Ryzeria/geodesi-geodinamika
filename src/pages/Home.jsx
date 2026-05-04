@@ -257,7 +257,7 @@ export default function Home() {
                   Akses Data GNSS
                 </Link>
                 {/* akses ke web aws https://aws.dekatif.co.id/login.php */}
-                <Link href="https://aws.dekatif.co.id/login.php" target="_blank" rel="noopener noreferrer" className="btn-success">
+                <Link to="https://aws.dekatif.co.id/login.php" target="_blank" rel="noopener noreferrer" className="btn-success">
                   {/* meteorological icon */}
                   <Globe size={16} />
                   AWS Portal
